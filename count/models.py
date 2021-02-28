@@ -26,6 +26,7 @@ class Room(models.Model):
 class User(models.Model):
     fname = models.CharField(max_length=50, verbose_name="First Name")
     lname = models.CharField(max_length=100, verbose_name="Last Name")
+    uname = models.CharField(max_length=100, unique=True, verbose_name="Username")
     password = models.CharField(max_length=1023)
     admin = models.BooleanField()
     active = models.BooleanField()
@@ -34,7 +35,6 @@ class User(models.Model):
     class Meta:
         managed = True
         db_table = 'User'
-        unique_together = ('fname', 'lname')
     def __str__(self):
         return self.fname + " " + self.lname
 

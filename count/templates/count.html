@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 <body>
     {% block content %}
-    <form method="POST" id="form">
-        {% csrf_token %}
-        <input name="plus" type="submit" value="+" class="save btn btn-success m-2" />
-        <input name="current" type="number" value="{{ current }}" disabled />
-        <input name="minus" type="submit" value="-" class="btn btn-warning m-2" />
-    </form>
+    <div id="current-data-container">
+        <form method="POST" id="form">
+            {% csrf_token %}
+            <input name="plus" type="submit" value="+" class="save btn btn-success m-2" />
+            <input name="current" type="number" value="{{ current }}" disabled />
+            <input name="minus" type="submit" value="-" class="btn btn-warning m-2" />
+        </form>
+    </div>
     {% endblock %}
   </body>

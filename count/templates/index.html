@@ -3,11 +3,11 @@
   {% block content %}
     <div id="current-data-container">
       <p>
-        This is a tool for keeping track of room capacity using 
-        staff members at all doors counting people in and out of the 
-        space.
+        This is a tool for keeping track of room capacity. Staff members at all doors to count people entering and leaving the space. 
+        Each staff member can monitor the total number of people currently in the space.
       </p>
-      <p>To use this tool please register.</p>
+      <p>If your organization has already created an account, please <a class="save btn btn-success m-2" href="{% url 'login' %}">Login</a></p>
+      <p>To get started, <a class="save btn btn-success m-2" href="{% url 'addAdmin' %}">Register</a></p>
     </div>
   {% endblock %}
 </body>

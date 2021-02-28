@@ -1,17 +1,35 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views.generic import View, ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from .models import *
 from .forms import *
+from django.core.exceptions import ValidationError
 
 def home(request):
     title = 'Capacity'
     template = loader.get_template('index.html')
     context = {
         'title': title
+    }
+    return HttpResponse(template.render(context, request))
+
+def login(request):
+    title = 'Login'
+    template = loader.get_template('login.html')
+    if request.method=='POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(uname=request.POST["uname"], password=request.POST["password"])
+            request.session['user'] = user.uname
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        form = LoginForm()
+    context = {
+        'title': title,
+        'form': form
     }
     return HttpResponse(template.render(context, request))
 
@@ -68,6 +86,7 @@ class AddAdminUser(CreateView):
     template_name = 'register.html'
     form_class = AdminUserForm
     def get_success_url(self, **kwargs):
+        self.request.session['user'] = self.object.uname
         return reverse_lazy('register', kwargs={'usr': self.object.id})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
