@@ -9,4 +9,5 @@ urlpatterns = [
     path('addRoom', views.AddRoom.as_view(), name='addRoom'),
     path('count/<int:r>', views.count, name='count'),
     path('addAdmin', views.AddAdminUser.as_view(), name="addAdmin"),
+    path('controlPanel/', views.control, name="controlPanel"),
 ]

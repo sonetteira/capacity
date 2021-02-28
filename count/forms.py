@@ -31,3 +31,6 @@ class LoginForm(forms.Form):
         except User.DoesNotExist:
             raise forms.ValidationError("Incorrect username or password.")
         return super().clean()
+
+class ChooseOrgForm(forms.Form):
+    org = forms.ModelChoiceField(queryset = Org.objects.all(), widget=forms.Select(attrs={'onchange': 'form.submit();'}))

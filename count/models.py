@@ -11,16 +11,22 @@ class Org(models.Model):
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    org = models.ForeignKey('Org', models.DO_NOTHING)
-    max_capacity = models.IntegerField()
-    current_capacity = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=255, unique=True, verbose_name="Name")
+    org = models.ForeignKey('Org', models.DO_NOTHING, verbose_name="Organization")
+    max_capacity = models.IntegerField(verbose_name="Maximum Capacity")
+    current_capacity = models.IntegerField(blank=True, null=True, verbose_name="Current Capacity")
 
     class Meta:
         managed = True
         db_table = 'Room'
     def __str__(self):
         return self.name
+    def vn(self,field):
+        return self._meta.get_field(field).verbose_name
+    def headers(self):
+        return[self.vn('name'),self.vn('max_capacity')]
+    def details(self):
+        return[self.name,self.max_capacity]
 
 
 class User(models.Model):
@@ -31,12 +37,25 @@ class User(models.Model):
     admin = models.BooleanField()
     active = models.BooleanField()
     org = models.ForeignKey('Org', models.DO_NOTHING, blank=True, null=True)
+    rooms = models.ManyToManyField('Room',through='UserRoomAccess',verbose_name='Rooms')
 
     class Meta:
         managed = True
         db_table = 'User'
     def __str__(self):
         return self.fname + " " + self.lname
+    def vn(self,field):
+        return self._meta.get_field(field).verbose_name
+    def headers(self):
+        return[self.vn('fname'),self.vn('lname'),self.vn('uname'),self.vn('admin'),self.vn('active'),self.vn('rooms')]
+    def details(self):
+        return[self.fname,self.lname,self.uname,self.admin,self.active,', '.join(self.getRooms())]
+    def getRooms(self):
+        access = UserRoomAccess.objects.filter(user=self.id)
+        rms = []
+        for e in access:
+            rms.append(e.room.name)
+        return rms
 
 class UserRoomAccess(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
