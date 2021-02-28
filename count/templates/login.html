@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+<body>
+  {% block content %}
+  <div id="current-data-container">
+    <h2>Login</h2>
+    <form method="post">
+      {% csrf_token %}
+        {% if form.errors %}
+          <p>Incorrect username or password. Please try again.</p>
+        {% endif %}
+        <table>
+        {% for field in form %}
+          <tr>
+          <td>{{ field.label_tag }}</td>
+          {% if 'object' in field %}
+            <td>{{ field.item }}</td>
+          {% else %}
+            <td>{{ field }}</td>
+          {% endif %}
+          </tr>
+        {% endfor %}
+        </table>
+    <button type="submit" class="btn btn-success">Login</button>
+    </form>
+  </div>
+  {% endblock %}
+</body>

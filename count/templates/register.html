@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+<body>
+    {% block content %}
+    <form method="POST" id="form">
+          {% csrf_token %}
+          {% if form.errors %}
+              {% for err in form.non_field_errors %}
+                  <p class="alert alert-danger">{{err}}</p>
+              {% endfor %}
+          {% endif %}
+          <table>
+          {% for field in form %}
+              <tr>
+              <td>{{ field.label_tag }}</td>
+              {% if 'object' in field %}
+                  <td>{{ field.item }}</td>
+              {% else %}
+                  <td>{{ field }}</td>
+              {% endif %}
+              </tr>
+  
+          {% endfor %}
+      </table>
+      <input type="submit" value="Save" class="save btn btn-success m-2" />
+      <a href="{{ view.success_url }}" class="btn btn-warning m-2">Cancel</a></form>
+      <script>
+        var inputs = document.getElementById("form").getElementsByTagName("input");
+              var selects = document.getElementById("form").getElementsByTagName("select");
+        loop(inputs);
+        loop(selects);
+        function loop(obj) {
+          for(var i=0; i<obj.length; i++) {
+            if(obj[i].type === "hidden" && obj[i].name != "csrfmiddlewaretoken") {
+                      hideHiddenInputLabels(obj[i].id);
+                    }
+          }
+        }
+        function hideHiddenInputLabels(element) {
+          var labels = document.getElementsByTagName('label');
+          for( var i = 0; i < labels.length; i++ ) {
+            if(labels[i].htmlFor == element) {
+              labels[i].className = "invisible";
+            }
+          }
+        }
+      </script>
+    {% endblock %}
+  </body>
