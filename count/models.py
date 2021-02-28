@@ -24,12 +24,12 @@ class Room(models.Model):
 
 
 class User(models.Model):
-    fname = models.CharField(max_length=50)
-    lname = models.CharField(max_length=100)
+    fname = models.CharField(max_length=50, verbose_name="First Name")
+    lname = models.CharField(max_length=100, verbose_name="Last Name")
     password = models.CharField(max_length=1023)
     admin = models.BooleanField()
     active = models.BooleanField()
-    org = models.ForeignKey('Org', models.DO_NOTHING)
+    org = models.ForeignKey('Org', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True

@@ -37,7 +37,15 @@ class Register(CreateView):
     model = Org
     template_name = 'register.html'
     form_class = OrgForm
-    success_url = 'home'
+    def get_success_url(self, **kwargs):
+        #on success, add this object as the home org for creating user
+        self.usr.org = self.object
+        self.usr.save()
+        return reverse_lazy('home')
+    def dispatch(self, request, *args, **kwargs):
+        #get org from url param
+        self.usr = User.objects.get(id=kwargs['usr'])
+        return super().dispatch(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
@@ -59,17 +67,8 @@ class AddAdminUser(CreateView):
     model = User
     template_name = 'register.html'
     form_class = AdminUserForm
-    success_url = reverse_lazy('home')
-    def dispatch(self, request, *args, **kwargs):
-        #get org from url param
-        self.org = Org.objects.get(id=kwargs['org'])
-        return super().dispatch(request, *args, **kwargs)
-    def form_valid(self, form):
-        print("we are here")
-        form.instance.admin = 1
-        form.instance.active = 1
-        form.instance.org = self.org
-        return super().form_valid(form)
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('register', kwargs={'usr': self.object.id})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
