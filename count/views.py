@@ -22,11 +22,11 @@ def login(request):
     if request.method=='POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(uname=request.POST["uname"], password=request.POST["password"])
+            user = User.objects.get(uname=request.POST["uname"], password=request.POST["password"], active=1)
             request.session['user'] = user.uname
-            request.session['active'] = user.active
-            if user.active == 1:
-                return HttpResponseRedirect(reverse('controlPanel'))
+            request.session['admin'] = user.admin
+            if user.admin == 1:
+                return HttpResponseRedirect(reverse('controlPanel'))  
             return HttpResponseRedirect(reverse('count'))
     else:
         form = LoginForm()
@@ -39,21 +39,21 @@ def login(request):
 def logout(request):
     if 'user' in request.session:
         del request.session['user']
-    if 'active' in request.session:
-        del request.session['active']
+    if 'admin' in request.session:
+        del request.session['admin']
     return HttpResponseRedirect(reverse('home'))
 
 def control(request):
     title = 'Control Panel'
     template = loader.get_template('control.html')
     object_list = []
-    if 'user' in request.session and request.session['active'] == 1:
+    if 'user' in request.session and request.session['admin'] == 1:
         if request.method=='POST':
             form = ChooseOrgForm(request.POST)
             org = request.POST['org']
             if form.is_valid():
-                object_list.append(Room.objects.filter(org = org))
-                object_list.append(User.objects.filter(org = org))
+                object_list.append({'tbl': Room.objects.filter(org = org)})
+                object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addRoom'})
         else:
             form = ChooseOrgForm()
     else:
@@ -106,7 +106,14 @@ class AddRoom(CreateView):
     model = Room
     template_name = 'register.html'
     form_class = RoomForm
-    success_url = 'home'
+    success_url = 'controlPanel'
+    def dispatch(self, request, *args, **kwargs):
+        if 'user' in request.session and request.session['admin'] == 1:
+            self.user = request.session['user']
+            self.admin = request.session['admin']
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('home'))
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
