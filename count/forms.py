@@ -33,4 +33,4 @@ class LoginForm(forms.Form):
         return super().clean()
 
 class ChooseOrgForm(forms.Form):
-    org = forms.ModelChoiceField(queryset = Org.objects.all(), widget=forms.Select(attrs={'onchange': 'form.submit();'}))
+    org = forms.ModelChoiceField(queryset = Org.objects.all(), empty_label=None, widget=forms.Select(attrs={'onchange': 'form.submit();'}))

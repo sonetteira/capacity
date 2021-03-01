@@ -25,7 +25,7 @@
                 </table>
             </form>
         </div>
-        <div class="row">
+        <div class="row" id="results">
             {% if object_list %}
                 {% for o in object_list %}
                     <table id="current-data-table" class="table table-striped table-hover">
@@ -52,5 +52,22 @@
             {% endif %}
         </div>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#form").submit(loadData())     
+        });
+        function loadData(){
+            var frm = $('form');
+            $.ajax({
+                type: "POST",
+                url: frm.attr("action"),
+                data: frm.serialize(),
+                success: function(data) {
+                    $("#document").html(data);
+                }
+            });
+            return;
+        }
+    </script>
     {% endblock %}
 </body>
