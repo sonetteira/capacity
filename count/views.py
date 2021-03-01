@@ -46,22 +46,18 @@ def logout(request):
 def control(request):
     title = 'Control Panel'
     template = loader.get_template('control.html')
+    org = ''
     object_list = []
     if 'user' in request.session and request.session['admin'] == 1:
-        if request.method=='POST':
-            form = ChooseOrgForm(request.POST)
-            org = request.POST['org']
-            if form.is_valid():
-                object_list.append({'tbl': Room.objects.filter(org = org)})
-                object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addRoom'})
-        else:
-            form = ChooseOrgForm()
+        org = User.objects.get(uname = request.session['user']).org
+        object_list.append({'tbl': Room.objects.filter(org = org)})
+        object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addRoom'})
     else:
         return HttpResponseRedirect(reverse('home'))
     context = {
         'title': title,
-        'form': form,
         'object_list': object_list,
+        'org': org,
     }
     return HttpResponse(template.render(context, request))
 

@@ -3,27 +3,7 @@
     {% block content %}
     <div id="current-data-container">
         <div class="row">
-            <form method="POST" id="form">
-                {% csrf_token %}
-                {% if form.errors %}
-                    {% for err in form.non_field_errors %}
-                        <p class="alert alert-danger">{{err}}</p>
-                    {% endfor %}
-                {% endif %}
-                <table>
-                    {% for field in form %}
-                        <tr>
-                        <td>{{ field.label_tag }}</td>
-                        {% if 'object' in field %}
-                            <td>{{ field.item }}</td>
-                        {% else %}
-                            <td>{{ field }}</td>
-                        {% endif %}
-                        </tr>
-            
-                    {% endfor %}
-                </table>
-            </form>
+            <p>Org: {{org}}</p>
         </div>
         <div class="row" id="results">
             {% if object_list %}
@@ -55,22 +35,5 @@
             {% endif %}
         </div>
     </div>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $("#form").submit(loadData())     
-        });
-        function loadData(){
-            var frm = $('form');
-            $.ajax({
-                type: "POST",
-                url: frm.attr("action"),
-                data: frm.serialize(),
-                success: function(data) {
-                    $("#document").html(data);
-                }
-            });
-            return;
-        }
-    </script>
     {% endblock %}
 </body>
