@@ -3,7 +3,7 @@
     {% block content %}
     <div id="current-data-container">
         <div class="row">
-            <p>Org: {{org}}</p>
+            <p>Org: {{org.1}}</p>
         </div>
         <div class="row" id="results">
             {% if object_list %}
@@ -29,7 +29,7 @@
                         {% endfor %}
                     </table>
                     {% if o.add %}
-                        <a href="{% url o.add %}" class="btn btn-success m-2">Add</a>
+                        <a href="{% url o.add org.0 %}" class="btn btn-success m-2">Add</a>
                     {% endif %}
                 {% endfor %}
             {% endif %}

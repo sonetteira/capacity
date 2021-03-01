@@ -48,10 +48,11 @@ def logout(request):
 def control(request):
     title = 'Control Panel'
     template = loader.get_template('control.html')
-    org = ''
+    org = ()
     object_list = []
     if 'user' in request.session and request.session['admin'] == 1:
-        org = User.objects.get(uname = request.session['user']).org
+        orgObj = User.objects.get(uname = request.session['user']).org
+        org = (orgObj.id, orgObj.name)
         object_list.append({'tbl': Room.objects.filter(org = org)})
         object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addRoom'})
     else:
@@ -102,16 +103,21 @@ class Register(CreateView):
 class AddRoom(CreateView):
     title = 'Add Room'
     model = Room
-    template_name = 'register.html'
+    template_name = 'add_edit.html'
     form_class = RoomForm
-    success_url = 'controlPanel'
+    org = ''
+    success_url = reverse_lazy('controlPanel')
+    def get_initial(self):
+        return {'org': self.org}
     def dispatch(self, request, *args, **kwargs):
         if 'user' in request.session and request.session['admin'] == 1:
-            self.user = request.session['user']
-            self.admin = request.session['admin']
+            '''self.user = request.session['user']
+            self.admin = request.session['admin']'''
+            self.org = kwargs['org']
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse('home'))
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title

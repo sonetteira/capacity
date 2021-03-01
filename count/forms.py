@@ -9,7 +9,10 @@ class OrgForm(forms.ModelForm):
 class RoomForm(forms.ModelForm):
     class Meta:
         model = Room
-        fields = '__all__'
+        fields = ['name','org','max_capacity']
+        widgets = {
+            'org': forms.HiddenInput(),
+        }
 
 class AdminUserForm(forms.ModelForm):
     class Meta:
