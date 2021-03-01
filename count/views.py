@@ -53,8 +53,8 @@ def control(request):
     if 'user' in request.session and request.session['admin'] == 1:
         orgObj = User.objects.get(uname = request.session['user']).org
         org = (orgObj.id, orgObj.name)
-        object_list.append({'tbl': Room.objects.filter(org = org)})
-        object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addRoom'})
+        object_list.append({'tbl': Room.objects.filter(org = org),'edit':'','add':'addRoom'})
+        object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
     else:
         return HttpResponseRedirect(reverse('home'))
     context = {
@@ -118,6 +118,26 @@ class AddRoom(CreateView):
         else:
             return HttpResponseRedirect(reverse('home'))
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
+class AddUser(CreateView):
+    title = 'Add User'
+    model = User
+    template_name = 'add_edit.html'
+    form_class = UserForm
+    org = ''
+    success_url = reverse_lazy('controlPanel')
+    def get_initial(self):
+        return {'org': self.org}
+    def dispatch(self, request, *args, **kwargs):
+        if 'user' in request.session and request.session['admin'] == 1:
+            self.org = kwargs['org']
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('home'))
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title

@@ -14,6 +14,15 @@ class RoomForm(forms.ModelForm):
             'org': forms.HiddenInput(),
         }
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+        widgets = {
+            'password': forms.PasswordInput(),
+            'org': forms.HiddenInput(),
+        }
+
 class AdminUserForm(forms.ModelForm):
     class Meta:
         model = User
