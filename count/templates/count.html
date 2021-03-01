@@ -1,13 +1,20 @@
-{% extends 'base.html' %}
+{% extends 'control_base.html' %}
 <body>
     {% block content %}
     <div id="current-data-container">
-        <form method="POST" id="form">
-            {% csrf_token %}
-            <input name="plus" type="submit" value="+" class="save btn btn-success m-2" />
-            <input name="current" type="number" value="{{ current }}" disabled />
-            <input name="minus" type="submit" value="-" class="btn btn-warning m-2" />
-        </form>
+        <div class=" h-100 d-flex justify-content-center align-items-center">
+            <h2>{{ name }}</h2>
+        </div>
+        <div class=" h-100 d-flex justify-content-center align-items-center"></div>
+            <form method="POST" id="form">
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-sm-5 center"><input name="minus" type="submit" value="-" class="btn btn-warning py-3 px-5 btn-lg text-large rounded-circle" /></div>
+                    <div class="col-sm-2 center"><input name="current" class="form-control-plaintext center text-large" type="text" value="{{ current }}" readonly /></div>
+                    <div class="col-sm-5 center"><input name="plus" type="submit" value="+" class="btn btn-success py-3 px-5 btn-lg text-large rounded-circle" /></div>
+                </div>
+            </form>
+        </div>
     </div>
     {% endblock %}
   </body>

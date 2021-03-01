@@ -68,6 +68,11 @@ def count(request, r):
     title = 'Capacity'
     current = Room.objects.get(id=r)
     template = loader.get_template('count.html')
+    def dispatch(self, request, *args, **kwargs):
+        #check if user has access to this space
+        user = User.objects.get(uname=request['user'])
+        if not user.admin and kwargs['r'] not in user.rooms:
+            return HttpResponseRedirect(reverse('home'))
     if request.method=='POST':
         if 'plus' in request.POST:
             current.current_capacity += 1
@@ -77,6 +82,7 @@ def count(request, r):
             current.save()
     context = {
         'title': title,
+        'name': current.name,
         'current': current.current_capacity,
     }
     return HttpResponse(template.render(context, request))
@@ -111,8 +117,6 @@ class AddRoom(CreateView):
         return {'org': self.org}
     def dispatch(self, request, *args, **kwargs):
         if 'user' in request.session and request.session['admin'] == 1:
-            '''self.user = request.session['user']
-            self.admin = request.session['admin']'''
             self.org = kwargs['org']
             return super().dispatch(request, *args, **kwargs)
         else:

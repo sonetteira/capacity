@@ -14,7 +14,7 @@ class Room(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name="Name")
     org = models.ForeignKey('Org', models.DO_NOTHING, verbose_name="Organization")
     max_capacity = models.IntegerField(verbose_name="Maximum Capacity")
-    current_capacity = models.IntegerField(blank=True, null=True, verbose_name="Current Capacity")
+    current_capacity = models.IntegerField(verbose_name="Current Capacity", default=0)
 
     class Meta:
         managed = True
