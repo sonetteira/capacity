@@ -25,7 +25,9 @@ def login(request):
             user = User.objects.get(uname=request.POST["uname"], password=request.POST["password"])
             request.session['user'] = user.uname
             request.session['active'] = user.active
-            return HttpResponseRedirect(reverse('home'))
+            if user.active == 1:
+                return HttpResponseRedirect(reverse('controlPanel'))
+            return HttpResponseRedirect(reverse('count'))
     else:
         form = LoginForm()
     context = {
@@ -33,6 +35,13 @@ def login(request):
         'form': form
     }
     return HttpResponse(template.render(context, request))
+
+def logout(request):
+    if 'user' in request.session:
+        del request.session['user']
+    if 'active' in request.session:
+        del request.session['active']
+    return HttpResponseRedirect(reverse('home'))
 
 def control(request):
     title = 'Control Panel'
