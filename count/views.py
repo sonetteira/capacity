@@ -53,8 +53,8 @@ def control(request):
     if 'user' in request.session and request.session['admin'] == 1:
         orgObj = User.objects.get(uname = request.session['user']).org
         org = (orgObj.id, orgObj.name)
-        object_list.append({'tbl': Room.objects.filter(org = org),'edit':'','add':'addRoom'})
-        object_list.append({'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
+        object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','add':'addRoom'})
+        object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
     else:
         return HttpResponseRedirect(reverse('home'))
     context = {
