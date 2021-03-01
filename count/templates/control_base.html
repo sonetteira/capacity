@@ -21,7 +21,7 @@
     <div class="bs-component">
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
           <div class="collapse navbar-collapse" id="navbarColor01">
-            {% if user.is_authenticated %}
+            {% if request.session.user %}
               <a class="btn btn-light mx-2" href="{% url 'controlPanel' %}">Control Panel</a>
               <a class="btn btn-light mx-2" href="{% url 'logout' %}">Logout</a>
             {% endif %}

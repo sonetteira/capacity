@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
@@ -37,8 +38,9 @@ def login(request):
     return HttpResponse(template.render(context, request))
 
 def logout(request):
+    request.session.flush()
     if 'user' in request.session:
-        del request.session['user']
+        del request.session['admin']
     if 'admin' in request.session:
         del request.session['admin']
     return HttpResponseRedirect(reverse('home'))
