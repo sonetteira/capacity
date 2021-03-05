@@ -25,6 +25,9 @@
                                     {% if o.edit %}
                                         <a href="{% url o.edit d.details.0 %}" class="btn btn-warning m-2">Edit</a>
                                     {% endif %}
+                                    {% if o.count %}
+                                        <a href="{% url o.count d.details.0 %}" class="btn btn-info m-2">Count People</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

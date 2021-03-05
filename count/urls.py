@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('register/<int:usr>', views.Register.as_view(), name='register'),
     path('controlPanel/', views.control, name="controlPanel"),
+    path('roomList/',views.roomList, name="roomList"),
     path('addRoom/<int:org>', views.AddRoom.as_view(), name='addRoom'),
     path('addUser/<int:org>', views.AddUser.as_view(), name="addUser"),
     path('count/<int:r>', views.count, name='count'),

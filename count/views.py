@@ -28,7 +28,7 @@ def login(request):
             request.session['admin'] = user.admin
             if user.admin == 1:
                 return HttpResponseRedirect(reverse('controlPanel'))  
-            return HttpResponseRedirect(reverse('count'))
+            return HttpResponseRedirect(reverse('roomList'))
     else:
         form = LoginForm()
     context = {
@@ -53,8 +53,28 @@ def control(request):
     if 'user' in request.session and request.session['admin'] == 1:
         orgObj = User.objects.get(uname = request.session['user']).org
         org = (orgObj.id, orgObj.name)
-        object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','add':'addRoom'})
+        object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','count': 'count','add':'addRoom'})
         object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
+    else:
+        return HttpResponseRedirect(reverse('home'))
+    context = {
+        'title': title,
+        'object_list': object_list,
+        'org': org,
+    }
+    return HttpResponse(template.render(context, request))
+
+def roomList(request): #list of available rooms for non admin users
+    title = 'Room List'
+    template = loader.get_template('control.html')
+    org = ()
+    object_list = []
+    if 'user' in request.session:
+        user = User.objects.get(uname=request.session['user'])
+        orgObj = User.objects.get(uname = request.session['user']).org
+        org = (orgObj.id, orgObj.name)
+        object_list.append({'header': 'Rooms', 'tbl': user.getRooms, 'count': 'count'})
+        print(object_list)
     else:
         return HttpResponseRedirect(reverse('home'))
     context = {

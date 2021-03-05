@@ -24,9 +24,9 @@ class Room(models.Model):
     def vn(self,field):
         return self._meta.get_field(field).verbose_name
     def headers(self):
-        return[self.vn('name'),self.vn('max_capacity')]
+        return['ID', self.vn('name'),self.vn('max_capacity')]
     def details(self):
-        return[self.name,self.max_capacity]
+        return[self.id, self.name,self.max_capacity]
 
 
 class User(models.Model):
@@ -34,6 +34,7 @@ class User(models.Model):
     lname = models.CharField(max_length=100, verbose_name="Last Name")
     uname = models.CharField(max_length=100, unique=True, verbose_name="Username")
     password = models.CharField(max_length=1023)
+    email = models.CharField(max_length=250, verbose_name="Email")
     admin = models.BooleanField()
     active = models.BooleanField()
     org = models.ForeignKey('Org', models.DO_NOTHING, blank=True, null=True)
@@ -49,12 +50,14 @@ class User(models.Model):
     def headers(self):
         return[self.vn('fname'),self.vn('lname'),self.vn('uname'),self.vn('admin'),self.vn('active'),self.vn('rooms')]
     def details(self):
-        return[self.fname,self.lname,self.uname,self.admin,self.active,', '.join(self.getRooms())]
+        return[self.fname,self.lname,self.uname,self.admin,self.active,', '.join(self.getRoomNames())]
+    def getRoomNames(self):
+        return [e.name for e in self.getRooms()]
     def getRooms(self):
         access = UserRoomAccess.objects.filter(user=self.id)
         rms = []
         for e in access:
-            rms.append(e.room.name)
+            rms.append(e.room)
         return rms
 
 class UserRoomAccess(models.Model):

@@ -24,7 +24,11 @@
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
           <div class="collapse navbar-collapse" id="navbarColor01">
             {% if request.session.user %}
-              <a class="btn btn-light mx-2" href="{% url 'controlPanel' %}">Control Panel</a>
+              {% if request.session.admin %}
+                <a class="btn btn-light mx-2" href="{% url 'controlPanel' %}">Control Panel</a>
+              {% else %}
+                <a class="btn btn-light mx-2" href="{% url 'roomList' %}">View Rooms</a>
+              {% endif %}
               <a class="btn btn-light mx-2" href="{% url 'logout' %}">Logout</a>
             {% endif %}
           </div>
