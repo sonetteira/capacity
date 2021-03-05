@@ -94,10 +94,13 @@ def count(request, r):
     title = 'Capacity'
     current = Room.objects.get(id=r)
     template = loader.get_template('count.html')
+    user = ""
+    room = ""
     #check if user should have access to this
-    user = User.objects.get(uname=request.session['user'])
-    rm = Room.objects.get(id=r)
-    if not user.admin and rm not in user.getRooms():
+    if 'user' in request.session:
+        user = User.objects.get(uname=request.session['user'])
+        rm = Room.objects.get(id=r)
+    if user=="" or not user.admin and rm not in user.getRooms():
         return HttpResponseRedirect(reverse('home'))
     if request.method=='POST':
         if 'plus' in request.POST:
