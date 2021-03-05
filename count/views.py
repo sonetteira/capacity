@@ -12,6 +12,11 @@ from django.core.exceptions import ValidationError
 def home(request):
     title = 'Capacity'
     template = loader.get_template('index.html')
+    #redirect logged in users
+    if 'user' in request.session:
+        if request.session['admin']:
+            return HttpResponseRedirect(reverse('controlPanel'))
+        return HttpResponseRedirect(reverse('roomList'))
     context = {
         'title': title
     }
@@ -20,6 +25,8 @@ def home(request):
 def login(request):
     title = 'Login'
     template = loader.get_template('login.html')
+    if 'user' in request.session:
+        return HttpResponseRedirect(reverse('home'))
     if request.method=='POST':
         form = LoginForm(request.POST)
         if form.is_valid():
