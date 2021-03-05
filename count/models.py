@@ -39,6 +39,7 @@ class User(models.Model):
     active = models.BooleanField()
     org = models.ForeignKey('Org', models.DO_NOTHING, blank=True, null=True)
     rooms = models.ManyToManyField('Room',through='UserRoomAccess',verbose_name='Rooms')
+    #note, admin users have default access to all rooms, room list will appear empty
 
     class Meta:
         managed = True

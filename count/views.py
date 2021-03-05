@@ -81,7 +81,6 @@ def roomList(request): #list of available rooms for non admin users
         orgObj = User.objects.get(uname = request.session['user']).org
         org = (orgObj.id, orgObj.name)
         object_list.append({'header': 'Rooms', 'tbl': user.getRooms, 'count': 'count'})
-        print(object_list)
     else:
         return HttpResponseRedirect(reverse('home'))
     context = {
@@ -95,11 +94,11 @@ def count(request, r):
     title = 'Capacity'
     current = Room.objects.get(id=r)
     template = loader.get_template('count.html')
-    def dispatch(self, request, *args, **kwargs):
-        #check if user has access to this space
-        user = User.objects.get(uname=request['user'])
-        if not user.admin and kwargs['r'] not in user.rooms:
-            return HttpResponseRedirect(reverse('home'))
+    #check if user should have access to this
+    user = User.objects.get(uname=request.session['user'])
+    rm = Room.objects.get(id=r)
+    if not user.admin and rm not in user.getRooms():
+        return HttpResponseRedirect(reverse('home'))
     if request.method=='POST':
         if 'plus' in request.POST:
             current.current_capacity += 1
