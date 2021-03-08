@@ -14,7 +14,7 @@ class RoomForm(forms.ModelForm):
             'org': forms.HiddenInput(),
         }
 
-class UserForm(forms.ModelForm):
+class NewUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = '__all__'
@@ -22,6 +22,11 @@ class UserForm(forms.ModelForm):
             'password': forms.PasswordInput(),
             'org': forms.HiddenInput(),
         }
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['fname','lname','uname','admin','active','email','rooms']
 
 class AdminUserForm(forms.ModelForm):
     class Meta:

@@ -62,7 +62,7 @@ def control(request):
     orgObj = User.objects.get(uname = request.session['user']).org
     org = (orgObj.id, orgObj.name)
     object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','count': 'count','add':'addRoom'})
-    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
+    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser'})
     context = {
         'title': title,
         'object_list': object_list,
@@ -141,21 +141,37 @@ class AddUser(CreateView):
     title = 'Add User'
     model = User
     template_name = 'add_edit.html'
-    form_class = UserForm
+    form_class = NewUserForm
     org = ''
     success_url = reverse_lazy('controlPanel')
-    def get_initial(self):
-        return {'org': self.org}
     def dispatch(self, request, *args, **kwargs):
         if authenticate(request) and confirmAdmin(request):
             self.org = kwargs['org']
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse('home'))
+    def get_initial(self):
+        return {'org': self.org}
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
         return context
+
+class EditUser(UpdateView):
+    title = 'Edit User'
+    model = User
+    template_name = 'add_edit.html'
+    form_class = EditUserForm
+    success_url = reverse_lazy('controlPanel')
+    def dispatch(self, request, *args, **kwargs):
+        if not (authenticate(request) and confirmAdmin(request)):
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+    
 
 class AddAdminUser(CreateView):
     title = 'Add Admin'

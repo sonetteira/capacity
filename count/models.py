@@ -49,9 +49,9 @@ class User(models.Model):
     def vn(self,field):
         return self._meta.get_field(field).verbose_name
     def headers(self):
-        return[self.vn('fname'),self.vn('lname'),self.vn('uname'),self.vn('admin'),self.vn('active'),self.vn('rooms')]
+        return["ID",self.vn('fname'),self.vn('lname'),self.vn('uname'),self.vn('email'),self.vn('admin'),self.vn('active'),self.vn('rooms')]
     def details(self):
-        return[self.fname,self.lname,self.uname,self.admin,self.active,', '.join(self.getRoomNames())]
+        return[self.id,self.fname,self.lname,self.uname,self.email,self.admin,self.active,', '.join(self.getRoomNames())]
     def getRoomNames(self):
         return [e.name for e in self.getRooms()]
     def getRooms(self):
