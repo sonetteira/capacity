@@ -116,25 +116,6 @@ def count(request, r):
     }
     return HttpResponse(template.render(context, request))
 
-class Register(CreateView):
-    title = 'Register'
-    model = Org
-    template_name = 'register.html'
-    form_class = OrgForm
-    def get_success_url(self, **kwargs):
-        #on success, add this object as the home org for creating user
-        self.usr.org = self.object
-        self.usr.save()
-        return reverse_lazy('home')
-    def dispatch(self, request, *args, **kwargs):
-        #get org from url param
-        self.usr = User.objects.get(id=kwargs['usr'])
-        return super().dispatch(request, *args, **kwargs)
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = self.title
-        return context
-
 class AddRoom(CreateView):
     title = 'Add Room'
     model = Room
@@ -145,7 +126,7 @@ class AddRoom(CreateView):
     def get_initial(self):
         return {'org': self.org}
     def dispatch(self, request, *args, **kwargs):
-        if 'user' in request.session and request.session['admin'] == 1:
+        if authenticate(request) and confirmAdmin(request):
             self.org = kwargs['org']
             return super().dispatch(request, *args, **kwargs)
         else:
@@ -166,7 +147,7 @@ class AddUser(CreateView):
     def get_initial(self):
         return {'org': self.org}
     def dispatch(self, request, *args, **kwargs):
-        if 'user' in request.session and request.session['admin'] == 1:
+        if authenticate(request) and confirmAdmin(request):
             self.org = kwargs['org']
             return super().dispatch(request, *args, **kwargs)
         else:
@@ -181,11 +162,62 @@ class AddAdminUser(CreateView):
     model = User
     template_name = 'register.html'
     form_class = AdminUserForm
+    def dispatch(self, request, *args, **kwargs):
+        if authenticate(request):
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
     def get_success_url(self, **kwargs):
         self.request.session['user'] = self.object.uname
         self.request.session['admin'] = 1
-        return reverse_lazy('register', kwargs={'usr': self.object.id})
+        return reverse_lazy('register')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
+        context['cancel'] = 'home'
         return context
+    
+class Register(CreateView):
+    title = 'Register'
+    model = Org
+    template_name = 'register.html'
+    form_class = OrgForm
+    def get_success_url(self, **kwargs):
+        #on success, add this object as the home org for creating user
+        self.usr.org = self.object
+        self.usr.save()
+        return reverse_lazy('home')
+    def dispatch(self, request, *args, **kwargs):
+        #confirm logged in as admin without and org
+        if authenticate(request) and confirmAdmin(request):
+            #get org from session
+            self.usr = User.objects.get(uname=request.session['user'])
+            if self.usr.org == None:
+                #if user org isn't set
+                return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('home'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        context['cancel'] = 'home'
+        return context
+
+def confirmAccess(request, roomid):
+    if not authenticate(request):
+        return False
+    #get db objects
+    user = User.objects.get(uname=request.session['user'])
+    rm = Room.objects.get(id=roomid)
+    if user.admin or rm in user.getRooms():
+        #this user has access
+        return True
+    return False
+
+def confirmAdmin(request):
+    if 'admin' in request.session and request.session['admin'] == 1:
+        return True
+    return False
+
+def authenticate(request):
+    if 'user' in request.session:
+        return True
+    return False

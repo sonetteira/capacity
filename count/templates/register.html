@@ -22,7 +22,12 @@
           {% endfor %}
       </table>
       <input type="submit" value="Save" class="save btn btn-success m-2" />
-      <a href="{{ view.success_url }}" class="btn btn-warning m-2">Cancel</a></form>
+      {% if cancel %}
+        <a href="{{ cancel }}" class="btn btn-warning m-2">Cancel</a>
+      {% else %}
+        <a href="{{ view.success_url }}" class="btn btn-warning m-2">Cancel</a>
+      {% endif %}
+      </form>
       <script>
         var inputs = document.getElementById("form").getElementsByTagName("input");
               var selects = document.getElementById("form").getElementsByTagName("select");
