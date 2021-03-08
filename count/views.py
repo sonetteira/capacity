@@ -13,8 +13,8 @@ def home(request):
     title = 'Capacity'
     template = loader.get_template('index.html')
     #redirect logged in users
-    if 'user' in request.session:
-        if request.session['admin']:
+    if authenticate(request):
+        if confirmAdmin(request):
             return HttpResponseRedirect(reverse('controlPanel'))
         return HttpResponseRedirect(reverse('roomList'))
     context = {
@@ -25,7 +25,7 @@ def home(request):
 def login(request):
     title = 'Login'
     template = loader.get_template('login.html')
-    if 'user' in request.session:
+    if authenticate(request):
         return HttpResponseRedirect(reverse('home'))
     if request.method=='POST':
         form = LoginForm(request.POST)
@@ -57,13 +57,12 @@ def control(request):
     template = loader.get_template('control.html')
     org = ()
     object_list = []
-    if 'user' in request.session and request.session['admin'] == 1:
-        orgObj = User.objects.get(uname = request.session['user']).org
-        org = (orgObj.id, orgObj.name)
-        object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','count': 'count','add':'addRoom'})
-        object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
-    else:
+    if not authenticate(request) and not confirmAdmin(request):
         return HttpResponseRedirect(reverse('home'))
+    orgObj = User.objects.get(uname = request.session['user']).org
+    org = (orgObj.id, orgObj.name)
+    object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','count': 'count','add':'addRoom'})
+    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'','add':'addUser'})
     context = {
         'title': title,
         'object_list': object_list,
@@ -76,13 +75,12 @@ def roomList(request): #list of available rooms for non admin users
     template = loader.get_template('control.html')
     org = ()
     object_list = []
-    if 'user' in request.session:
-        user = User.objects.get(uname=request.session['user'])
-        orgObj = User.objects.get(uname = request.session['user']).org
-        org = (orgObj.id, orgObj.name)
-        object_list.append({'header': 'Rooms', 'tbl': user.getRooms, 'count': 'count'})
-    else:
+    if not authenticate(request):
         return HttpResponseRedirect(reverse('home'))
+    user = User.objects.get(uname=request.session['user'])
+    orgObj = User.objects.get(uname = request.session['user']).org
+    org = (orgObj.id, orgObj.name)
+    object_list.append({'header': 'Rooms', 'tbl': user.getRooms, 'count': 'count'})
     context = {
         'title': title,
         'object_list': object_list,
@@ -97,11 +95,13 @@ def count(request, r):
     user = ""
     room = ""
     #check if user should have access to this
-    if 'user' in request.session:
+    if not confirmAccess(request, r):
+        return HttpResponseRedirect(reverse('home'))
+    '''if 'user' in request.session:
         user = User.objects.get(uname=request.session['user'])
         rm = Room.objects.get(id=r)
     if user=="" or not user.admin and rm not in user.getRooms():
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('home'))'''
     if request.method=='POST':
         if 'plus' in request.POST:
             current.current_capacity += 1
@@ -207,8 +207,10 @@ def confirmAccess(request, roomid):
     #get db objects
     user = User.objects.get(uname=request.session['user'])
     rm = Room.objects.get(id=roomid)
-    if user.admin or rm in user.getRooms():
+    if rm in user.getRooms():
         #this user has access
+        return True
+    if user.admin and user.org == rm.org:
         return True
     return False
 
