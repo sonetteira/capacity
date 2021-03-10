@@ -15,7 +15,44 @@
     .invisible {display: none;}
     .center {text-align: center;}
     .text-large {font-size: 350%;}
+    #form ul li {list-style-type: none;}
     </style>
+    <script>
+      function watchthis(sub, obj) {
+        if(sub.checked) {
+          show([],[obj]);
+        }
+        else {
+          show([obj],[]);
+        }
+
+      }
+      function show(v, i)
+      {
+          makeVisible(v);
+          makeInvisible(i);
+      }
+
+      function makeVisible(x)
+      {
+          x.forEach(element => {
+              document.getElementById(element).parentElement.parentElement.className = "";
+              if(typeof document.getElementById(element).labels !== 'undefined') {
+                document.getElementById(element).labels[0].parentElement.parentElement.className = ""; }
+          });
+      }
+
+      function makeInvisible(x)
+      {
+          x.forEach(element => {
+              document.getElementById(element).parentElement.parentElement.className = "invisible";
+              if(typeof document.getElementById(element).labels !== 'undefined') {
+                document.getElementById(element).labels[0].parentElement.parentElement.className = "invisible"; }
+              document.getElementById(element).value = "";
+          });
+      }
+
+    </script>
     <title>{{ title }}</title>
   </head>
   <body id="document">

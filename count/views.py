@@ -170,6 +170,7 @@ class EditUser(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
+        context['script'] = "<script>watchthis(document.getElementById(\'id_admin\'), 'id_rooms');</script>"
         return context
     
 

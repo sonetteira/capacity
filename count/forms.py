@@ -22,6 +22,7 @@ class NewUserForm(forms.ModelForm):
             'password': forms.PasswordInput(),
             'org': forms.HiddenInput(),
             'rooms': forms.CheckboxSelectMultiple(),
+            'admin': forms.CheckboxInput(attrs={'onchange':'watchthis(this, \'id_rooms\');'}),
         }
 
 class EditUserForm(forms.ModelForm):
@@ -30,6 +31,7 @@ class EditUserForm(forms.ModelForm):
         fields = ['fname','lname','uname','admin','active','email','rooms']
         widgets = {
             'rooms': forms.CheckboxSelectMultiple(),
+            'admin': forms.CheckboxInput(attrs={'onchange':'watchthis(this, \'id_rooms\');'}),
         }
 
 class AdminUserForm(forms.ModelForm):
