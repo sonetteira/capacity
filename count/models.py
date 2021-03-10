@@ -53,6 +53,8 @@ class User(models.Model):
     def details(self):
         return[self.id,self.fname,self.lname,self.uname,self.email,self.admin,self.active,', '.join(self.getRoomNames())]
     def getRoomNames(self):
+        if self.admin:
+            return ['all']
         return [e.name for e in self.getRooms()]
     def getRooms(self):
         access = UserRoomAccess.objects.filter(user=self.id)

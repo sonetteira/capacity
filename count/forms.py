@@ -21,12 +21,16 @@ class NewUserForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),
             'org': forms.HiddenInput(),
+            'rooms': forms.CheckboxSelectMultiple(),
         }
 
 class EditUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['fname','lname','uname','admin','active','email','rooms']
+        widgets = {
+            'rooms': forms.CheckboxSelectMultiple(),
+        }
 
 class AdminUserForm(forms.ModelForm):
     class Meta:
