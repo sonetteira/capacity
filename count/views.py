@@ -61,7 +61,7 @@ def control(request):
         return HttpResponseRedirect(reverse('home'))
     orgObj = User.objects.get(uname = request.session['user']).org
     org = (orgObj.id, orgObj.name)
-    object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'','count': 'count','add':'addRoom'})
+    object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'editRoom','count': 'count','add':'addRoom'})
     object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser'})
     context = {
         'title': title,
@@ -137,6 +137,24 @@ class AddRoom(CreateView):
         context['title'] = self.title
         return context
 
+class EditRoom(UpdateView):
+    title = 'Edit Room'
+    model = Room
+    template_name = 'add_edit.html'
+    form_class = RoomForm
+    success_url = reverse_lazy('controlPanel')
+    def dispatch(self, request, *args, **kwargs):
+        if not (authenticate(request) and confirmAdmin(request)):
+            return HttpResponseRedirect(reverse('home'))
+        user = User.objects.get(uname=request.session['user'])
+        if user.org != self.get_object().org:
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
 class AddUser(CreateView):
     title = 'Add User'
     model = User
@@ -165,6 +183,9 @@ class EditUser(UpdateView):
     success_url = reverse_lazy('controlPanel')
     def dispatch(self, request, *args, **kwargs):
         if not (authenticate(request) and confirmAdmin(request)):
+            return HttpResponseRedirect(reverse('home'))
+        user = User.objects.get(uname=request.session['user'])
+        if user.org != self.get_object().org:
             return HttpResponseRedirect(reverse('home'))
         return super().dispatch(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
