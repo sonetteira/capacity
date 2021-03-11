@@ -62,7 +62,7 @@ def control(request):
     orgObj = User.objects.get(uname = request.session['user']).org
     org = (orgObj.id, orgObj.name)
     object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'editRoom','count': 'count','add':'addRoom','delete':'deleteRoom'})
-    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser','delete':''})
+    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser','delete':'deleteUser'})
     context = {
         'title': title,
         'object_list': object_list,
@@ -210,6 +210,29 @@ class EditUser(UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
         context['script'] = "<script>watchthis(document.getElementById(\'id_admin\'), 'id_rooms');</script>"
+        return context
+
+class DeleteUser(DeleteView):
+    title = "Delete User"
+    model = User
+    template_name = 'confirm_delete.html'
+    success_url = reverse_lazy('controlPanel')
+    thisisyou = False
+    def dispatch(self, request, *args, **kwargs):
+        if not (authenticate(request) and confirmAdmin(request)):
+            return HttpResponseRedirect(reverse('home'))
+        user = User.objects.get(uname=request.session['user'])
+        if user.org != self.get_object().org:
+            return HttpResponseRedirect(reverse('home'))
+        if user.uname == self.get_object().uname:
+            self.thisisyou = True
+        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        context['sub'] = self.get_object().uname
+        if self.thisisyou:
+            context['thisisyou'] = True
         return context
     
 

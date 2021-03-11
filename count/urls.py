@@ -14,6 +14,7 @@ urlpatterns = [
     path('deleteRoom/<int:pk>', views.DeleteRoom.as_view(), name='deleteRoom'),
     path('addUser/<int:org>', views.AddUser.as_view(), name='addUser'),
     path('editUser/<int:pk>', views.EditUser.as_view(), name='editUser'),
+    path('deleteUser/<int:pk>', views.DeleteUser.as_view(), name='deleteUser'),
     path('count/<int:r>', views.count, name='count'),
     path('addAdmin', views.AddAdminUser.as_view(), name="addAdmin"),
     
