@@ -4,9 +4,14 @@
     <form method="POST" id="form">
           {% csrf_token %}
           {% if form.errors %}
-              {% for err in form.non_field_errors %}
-                  <p class="alert alert-danger">{{err}}</p>
+            {% for field in form %}
+              {% for error in field.errors %}
+                  <p> {{ field }}: {{ error }} </p>
               {% endfor %}
+            {% endfor %}
+            {% for err in form.non_field_errors %}
+                <p class="alert alert-danger">{{err}}</p>
+            {% endfor %}
           {% endif %}
           <table>
           {% for field in form %}
