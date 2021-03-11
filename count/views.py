@@ -61,8 +61,8 @@ def control(request):
         return HttpResponseRedirect(reverse('home'))
     orgObj = User.objects.get(uname = request.session['user']).org
     org = (orgObj.id, orgObj.name)
-    object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'editRoom','count': 'count','add':'addRoom'})
-    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser'})
+    object_list.append({'header': 'Rooms', 'tbl': Room.objects.filter(org = org),'edit':'editRoom','count': 'count','add':'addRoom','delete':'deleteRoom'})
+    object_list.append({'header': 'Staff', 'tbl': User.objects.filter(org = org),'edit':'editUser','add':'addUser','delete':''})
     context = {
         'title': title,
         'object_list': object_list,
@@ -153,6 +153,24 @@ class EditRoom(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
+        return context
+    
+class DeleteRoom(DeleteView):
+    title = "Delete Room"
+    model = Room
+    template_name = 'confirm_delete.html'
+    success_url = reverse_lazy('controlPanel')
+    def dispatch(self, request, *args, **kwargs):
+        if not (authenticate(request) and confirmAdmin(request)):
+            return HttpResponseRedirect(reverse('home'))
+        user = User.objects.get(uname=request.session['user'])
+        if user.org != self.get_object().org:
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        context['sub'] = self.get_object().name
         return context
 
 class AddUser(CreateView):

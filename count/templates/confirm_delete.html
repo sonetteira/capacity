@@ -1,0 +1,12 @@
+{% extends 'control_base.html' %}
+<body>
+    {% block content %}
+    <form  method="post">
+    {% csrf_token %}
+    Are you sure you want to delete this?<br />
+    <button type="submit" class="save btn btn-success m-2">Delete</button>
+    <a href="{{ view.get_success_url }}" class="btn btn-warning m-2">Cancel</a>
+    </form>
+
+    {% endblock %}
+</body>
